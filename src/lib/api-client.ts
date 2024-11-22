@@ -14,7 +14,9 @@ async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
       .catch(() => ({ message: "An error occurred" }));
     throw new Error(error.message || "Request failed");
   }
-  return response.json();
+
+  const data = await response.json();
+  return { data };
 }
 
 export async function apiClient<T>(
@@ -22,13 +24,16 @@ export async function apiClient<T>(
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        "Content-Type": "application/json",
-        ...options.headers
-      },
-      ...options
-    });
+    const response = await fetch(
+      `${API_BASE_URL}${endpoint}?apikey=${import.meta.env.VITE_API_KEY}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          ...options.headers
+        },
+        ...options
+      }
+    );
     return handleResponse<T>(response);
   } catch (error) {
     toast.error(error instanceof Error ? error.message : "An error occurred");

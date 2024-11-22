@@ -32,10 +32,11 @@ export function Login() {
     setIsLoading(true);
     try {
       const response = await authService.login(data);
-      toast.success("Login successful");
-
-      if (response.secondFactorAuthentication) {
-        navigate("/mfa");
+      console.log(response);
+      if (
+        response.secondFactorAuthentication?.SecondFactorAuthenticationToken
+      ) {
+        navigate("/verify-otp");
       } else {
         navigate("/dashboard");
       }

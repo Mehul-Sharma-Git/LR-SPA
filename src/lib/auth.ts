@@ -41,7 +41,8 @@ interface OTPResponse {
 class AuthService {
   private static instance: AuthService;
   private token: string | null = null;
-
+  private loginEmail: string | null = null;
+  private secondFactorAuthenticationToken: string | null = null;
   private constructor() {}
 
   static getInstance(): AuthService {
@@ -59,16 +60,22 @@ class AuthService {
         body: JSON.stringify(data)
       }
     );
+    console.log("res", response);
 
-    if (response.data?.access_token) {
-      this.token = response.data.access_token;
+    if (
+      response.data?.secondFactorAuthentication?.SecondFactorAuthenticationToken
+    ) {
+      this.secondFactorAuthenticationToken =
+        response.data?.secondFactorAuthentication.SecondFactorAuthenticationToken;
+      this.loginEmail = data.email;
     }
 
     return response.data!;
   }
 
   async verifyMFA(data: MFAFormData): Promise<MFAResponse> {
-    if (!this.token) throw new Error("No authentication token found");
+    if (!this.secondFactorAuthenticationToken)
+      throw new Error("No authentication token found");
 
     const response = await apiClient<MFAResponse>("/auth/mfa/verify", {
       method: "POST",
@@ -81,12 +88,15 @@ class AuthService {
     return response.data!;
   }
 
-  async requestOTP(data: OTPFormData): Promise<OTPResponse> {
-    const response = await apiClient<OTPResponse>("/auth/otp/request", {
-      method: "POST",
-      body: JSON.stringify(data)
-    });
-
+  async requestOTP(): Promise<OTPResponse> {
+    const response = await apiClient<OTPResponse>(
+      `/identity/v2/auth/login/2fa/otp/email?secondfactorauthenticationtoken=${this.secondFactorAuthenticationToken}`,
+      {
+        method: "POST",
+        body: JSON.stringify({ email: this.loginEmail })
+      }
+    );
+    console.log(response);
     return response.data!;
   }
 
