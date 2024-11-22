@@ -135,7 +135,7 @@ class AuthService {
   async verifyOTP(code: string): Promise<AuthResponse> {
     try {
       const response = await apiClient<OTPVerifyResponse>(
-        "/auth/login/2fa/verification/otp/email",
+        "/identity/v2/auth/login/2fa/verification/otp/email",
         {
           method: "PUT",
           body: JSON.stringify({ emailid: this.loginEmail, Otp: code })
