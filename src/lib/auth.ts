@@ -78,6 +78,8 @@ class AuthService {
         this.loginEmail = data.email;
         this.isPhoneEnabled =
           !!response.data?.SecondFactorAuthentication.OTPPhoneNo;
+        this.mobileNumber =
+          response.data?.SecondFactorAuthentication.OTPPhoneNo;
         this.isSecurityQuestionsEnabled =
           !!response.data?.SecondFactorAuthentication.SecurityQuestions;
         this.isGoogleAuthenticatorEnabled =
@@ -124,7 +126,7 @@ class AuthService {
   async requestSMSOTP(): Promise<OTPResponse> {
     try {
       const response = await apiClient<OTPResponse>(
-        "/identity/v2/auth/login/2fa/otp/sms",
+        "/identity/v2/auth/login/2FA",
         {
           method: "PUT",
           body: JSON.stringify({ phoneno2fa: this.mobileNumber })
@@ -144,7 +146,6 @@ class AuthService {
       };
     }
   }
-
 
   async requestOTP(): Promise<OTPResponse> {
     try {
@@ -169,12 +170,11 @@ class AuthService {
       };
     }
   }
-  
 
-  async verifySmsOTP(code: string): Promise<OTPResponse> {
+  async verifySmsOTP(code: string): Promise<AuthResponse> {
     // https://api.loginradius.com/identity/v2/auth/login/2FA/verification/otp
     try {
-      const response = await apiClient<OTPResponse>(
+      const response = await apiClient<AuthResponse>(
         "/identity/v2/auth/login/2FA/verification/otp",
         {
           method: "PUT",
@@ -191,7 +191,10 @@ class AuthService {
     } catch (error) {
       console.error("Error requesting OTP:", error);
       return {
-        IsPosted: false
+        Profile: null,
+        access_token: "",
+        expires_in: "",
+        SecondFactorAuthentication: undefined
       };
     }
   }
@@ -256,10 +259,10 @@ class AuthService {
   ): Promise<OTPResponse> {
     try {
       const response = await apiClient<OTPResponse>(
-        "https://dummyapi.com/auth/securityquestions",
+        "/identity/v2/auth/login/2fa/securityquestionanswer",
         {
-          method: "POST",
-          body: JSON.stringify({ questions })
+          method: "PUT",
+          body: JSON.stringify({ securityquestionanswer: questions })
         },
         {
           secondfactorauthenticationtoken:
@@ -326,7 +329,11 @@ class AuthService {
     return this.loginEmail;
   }
 
-  getConfiguredMFA(): any {
+  getConfiguredMFA(): {
+    isPhoneEnabled: boolean;
+    isSecurityQuestionsEnabled: boolean;
+    isGoogleAuthenticatorEnabled: boolean;
+  } {
     return {
       isPhoneEnabled: this.isPhoneEnabled,
       isSecurityQuestionsEnabled: this.isSecurityQuestionsEnabled,
