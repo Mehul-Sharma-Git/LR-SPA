@@ -7,6 +7,7 @@ import { OTP } from "./pages/OTP";
 import { VerifyOTP } from "./pages/VerifyOTP";
 import { Dashboard } from "./pages/Dashboard";
 import AddMFA from "./pages/AddMFA";
+import MfaSelector from "./pages/MfaSelector";
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="/verify-otp" element={<VerifyOTP />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/add-mfa" element={<AddMFA />} />
+          <Route path="/mfa-selector" element={<MfaSelector />} />
           <Route path="/" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>

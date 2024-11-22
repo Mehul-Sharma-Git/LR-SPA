@@ -33,7 +33,7 @@ const Header: React.FC = () => {
               <button
                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                 onClick={() =>
-                  authService.logout().then(() => navigate("./login"))
+                  authService.logout().then(() => navigate("/login"))
                 }
               >
                 Logout

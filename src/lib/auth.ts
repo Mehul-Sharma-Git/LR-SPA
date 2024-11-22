@@ -44,6 +44,10 @@ class AuthService {
   private token: string | null = localStorage.getItem("spa-token") || null;
   private loginEmail: string | null = null;
   private secondFactorAuthenticationToken: string | null = null;
+  private isPhoneEnabled: boolean = false;
+  private isSecurityQuestionsEnabled: boolean = false;
+  private isGoogleAuthenticatorEnabled: boolean = false;
+
   private constructor() {}
 
   static getInstance(): AuthService {
@@ -71,6 +75,13 @@ class AuthService {
         this.secondFactorAuthenticationToken =
           response.data?.SecondFactorAuthentication.SecondFactorAuthenticationToken;
         this.loginEmail = data.email;
+        this.isPhoneEnabled =
+          !!response.data?.SecondFactorAuthentication.OTPPhoneNo;
+        this.isSecurityQuestionsEnabled =
+          !!response.data?.SecondFactorAuthentication.SecurityQuestions;
+        this.isGoogleAuthenticatorEnabled =
+          !!response.data?.SecondFactorAuthentication
+            .IsGoogleAuthenticatorVerified;
       }
 
       return response.data!;
@@ -260,6 +271,14 @@ class AuthService {
   }
   getEmail(): string | null {
     return this.loginEmail;
+  }
+
+  getConfiguredMFA(): any {
+    return {
+      isPhoneEnabled: this.isPhoneEnabled,
+      isSecurityQuestionsEnabled: this.isSecurityQuestionsEnabled,
+      isGoogleAuthenticatorEnabled: this.isGoogleAuthenticatorEnabled
+    };
   }
 }
 

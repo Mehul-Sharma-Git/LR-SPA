@@ -9,7 +9,10 @@ import { Link } from "react-router-dom";
 
 function Sidebar() {
   return (
-    <div className="w-64 h-full bg-white shadow-md">
+    <div
+      className="w-64 h-full bg-white shadow-md"
+      style={{ height: "calc(100vh - 120px)" }}
+    >
       <ul className="space-y-2">
         <li>
           <Link

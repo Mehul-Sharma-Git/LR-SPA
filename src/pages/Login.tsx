@@ -36,7 +36,14 @@ export function Login() {
       if (
         response.SecondFactorAuthentication?.SecondFactorAuthenticationToken
       ) {
-        navigate("/verify-otp");
+        if (
+          response.SecondFactorAuthentication.OTPPhoneNo ||
+          response.SecondFactorAuthentication.SecurityQuestions
+        ) {
+          navigate("/mfa-selector");
+        } else {
+          navigate("/verify-otp");
+        }
       } else {
         navigate("/dashboard");
       }
