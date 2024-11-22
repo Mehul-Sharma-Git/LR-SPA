@@ -43,6 +43,7 @@ class AuthService {
   private static instance: AuthService;
   private token: string | null = localStorage.getItem("spa-token") || null;
   private loginEmail: string | null = null;
+  private mobileNumber: string | null = null;
   private secondFactorAuthenticationToken: string | null = null;
   private isPhoneEnabled: boolean = false;
   private isSecurityQuestionsEnabled: boolean = false;
@@ -119,6 +120,32 @@ class AuthService {
     }
   }
 
+  // https://api.loginradius.com/identity/v2/auth/account/2FA
+  async requestSMSOTP(): Promise<OTPResponse> {
+    try {
+      const response = await apiClient<OTPResponse>(
+        "/identity/v2/auth/login/2fa/otp/sms",
+        {
+          method: "PUT",
+          body: JSON.stringify({ phoneno2fa: this.mobileNumber })
+        },
+        {
+          secondfactorauthenticationtoken:
+            this.secondFactorAuthenticationToken ?? ""
+        }
+      );
+      console.log(response);
+
+      return response.data!;
+    } catch (error) {
+      console.error("Error requesting SMS OTP:", error);
+      return {
+        IsPosted: false
+      };
+    }
+  }
+
+
   async requestOTP(): Promise<OTPResponse> {
     try {
       const response = await apiClient<OTPResponse>(
@@ -126,6 +153,32 @@ class AuthService {
         {
           method: "POST",
           body: JSON.stringify({ emailid: this.loginEmail })
+        },
+        {
+          secondfactorauthenticationtoken:
+            this.secondFactorAuthenticationToken ?? ""
+        }
+      );
+      console.log(response);
+
+      return response.data!;
+    } catch (error) {
+      console.error("Error requesting OTP:", error);
+      return {
+        IsPosted: false
+      };
+    }
+  }
+  
+
+  async verifySmsOTP(code: string): Promise<OTPResponse> {
+    // https://api.loginradius.com/identity/v2/auth/login/2FA/verification/otp
+    try {
+      const response = await apiClient<OTPResponse>(
+        "/identity/v2/auth/login/2FA/verification/otp",
+        {
+          method: "PUT",
+          body: JSON.stringify({ otp: code })
         },
         {
           secondfactorauthenticationtoken:
