@@ -137,8 +137,12 @@ class AuthService {
       const response = await apiClient<OTPVerifyResponse>(
         "/auth/login/2fa/verification/otp/email",
         {
-          method: "POST",
+          method: "PUT",
           body: JSON.stringify({ emailid: this.loginEmail, Otp: code })
+        },
+        {
+          secondfactorauthenticationtoken:
+            this.secondFactorAuthenticationToken ?? ""
         }
       );
       console.log(response);
