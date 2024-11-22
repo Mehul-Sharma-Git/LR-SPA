@@ -55,7 +55,7 @@ const AddMFA: React.FC = () => {
           return;
         }
         const formattedQuestions = securityQuestions.map((q) => ({
-          QuestionId: q.question,
+          QuestionId: "Company?",
           Answer: q.answer
         }));
         await authService.addSecurityQuestions(formattedQuestions);
@@ -129,7 +129,7 @@ const AddMFA: React.FC = () => {
           <div className="mb-6">
             {securityQuestions.map((sq, index) => (
               <div key={index} className="mb-4">
-                <label
+                {/* <label
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor={`question-${index}`}
                 >
@@ -147,12 +147,12 @@ const AddMFA: React.FC = () => {
                     )
                   }
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline mb-2"
-                />
+                /> */}
                 <label
                   className="block text-gray-700 text-sm font-bold mb-2"
                   htmlFor={`answer-${index}`}
                 >
-                  Answer
+                  Update Answer
                 </label>
                 <input
                   id={`answer-${index}`}
