@@ -50,7 +50,7 @@ const AddMFA: React.FC = () => {
         }
         await authService.addSMSOTP(phoneNumber);
       } else if (selectedOption === "securityQuestions") {
-        if (securityQuestions.some((q) => !q.question || !q.answer)) {
+        if (securityQuestions.some((q) => !q.answer)) {
           setError("All security questions and answers are required.");
           return;
         }
