@@ -27,30 +27,30 @@ export function OTP() {
     resolver: zodResolver(otpSchema)
   });
 
-  const onSubmit = async (data: OTPFormData) => {
-    setIsLoading(true);
-    try {
-      const response = await authService.requestOTP();
-      if (response.success) {
-        toast.success(response.message || "OTP sent successfully");
-        navigate("/verify-otp");
-      } else {
-        toast.error(response.message || "Failed to send OTP");
-      }
-    } catch (error) {
-      toast.error("Failed to send OTP. Please try again.");
-      console.error("OTP sending failed:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  // const onSubmit = async (data: OTPFormData) => {
+  //   setIsLoading(true);
+  //   try {
+  //     const response = await authService.requestOTP();
+  //     if (response.IsPosted) {
+  //       toast.success("OTP sent successfully");
+  //       navigate("/verify-otp");
+  //     } else {
+  //       toast.error("Failed to send OTP");
+  //     }
+  //   } catch (error) {
+  //     toast.error("Failed to send OTP. Please try again.");
+  //     console.error("OTP sending failed:", error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   return (
     <AuthLayout
       title="One-Time Password"
       subtitle="Enter your email to receive a one-time password"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+      <form className="mt-8 space-y-6">
         <Input
           label="Email address"
           type="email"

@@ -21,19 +21,26 @@ async function handleResponse<T>(response: Response): Promise<ApiResponse<T>> {
 
 export async function apiClient<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: RequestInit = {},
+  params?: Record<string, string>
 ): Promise<ApiResponse<T>> {
   try {
-    const response = await fetch(
-      `${API_BASE_URL}${endpoint}?apikey=${import.meta.env.VITE_API_KEY}`,
-      {
-        headers: {
-          "Content-Type": "application/json",
-          ...options.headers
-        },
-        ...options
-      }
-    );
+    const url = new URL(`${API_BASE_URL}${endpoint}`);
+    url.searchParams.append("apikey", import.meta.env.VITE_API_KEY);
+
+    if (params) {
+      Object.keys(params).forEach((key) =>
+        url.searchParams.append(key, params[key])
+      );
+    }
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers
+      },
+      ...options
+    });
     return handleResponse<T>(response);
   } catch (error) {
     toast.error(error instanceof Error ? error.message : "An error occurred");

@@ -31,16 +31,19 @@ export function VerifyOTP() {
   useEffect(() => {
     const requestOTP = async () => {
       const response = await authService.requestOTP();
-
-      if (response.success) {
-        toast.success(response.message || "OTP sent successfully");
+      console.log(response);
+      if (response.IsPosted) {
+        toast.success("OTP sent successfully");
         navigate("/verify-otp");
       } else {
-        toast.error(response.message || "Failed to send OTP");
+        toast.error("Failed to send OTP");
       }
     };
-
-    requestOTP();
+    if (!authService.get2FAToken()) {
+      navigate("/login");
+    } else {
+      requestOTP();
+    }
   }, []);
 
   const onSubmit = async (data: VerifyOTPFormData) => {

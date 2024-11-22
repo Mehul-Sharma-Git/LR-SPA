@@ -34,7 +34,7 @@ export function Login() {
       const response = await authService.login(data);
       console.log(response);
       if (
-        response.secondFactorAuthentication?.SecondFactorAuthenticationToken
+        response.SecondFactorAuthentication?.SecondFactorAuthenticationToken
       ) {
         navigate("/verify-otp");
       } else {
