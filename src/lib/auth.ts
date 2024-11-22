@@ -173,6 +173,9 @@ class AuthService {
   clearToken(): void {
     this.token = null;
   }
+  getEmail(): string | null {
+    return this.loginEmail;
+  }
 }
 
 export const authService = AuthService.getInstance();
