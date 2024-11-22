@@ -41,7 +41,7 @@ interface OTPResponse {
 
 class AuthService {
   private static instance: AuthService;
-  private token: string | null = null;
+  private token: string | null = localStorage.getItem("spa-token") || null;
   private loginEmail: string | null = null;
   private secondFactorAuthenticationToken: string | null = null;
   private constructor() {}
@@ -148,6 +148,7 @@ class AuthService {
       console.log(response);
       if (response.data?.access_token) {
         this.token = response.data?.access_token;
+        localStorage.setItem("spa-token", this.token);
       }
       return response.data!;
     } catch (error) {
@@ -162,7 +163,91 @@ class AuthService {
       throw error;
     }
   }
+  async addSMSOTP(phoneNumber: string): Promise<OTPResponse> {
+    try {
+      const response = await apiClient<OTPResponse>(
+        "/identity/v2/auth/account/2fa",
+        {
+          method: "PUT",
+          body: JSON.stringify({ phoneno2fa: `+91${phoneNumber}` }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.token}`
+          }
+        }
+      );
+      console.log(response);
 
+      return response.data!;
+    } catch (error) {
+      console.error("Error adding SMS OTP:", error);
+      return {
+        IsPosted: false
+      };
+    }
+  }
+
+  async addSecurityQuestions(
+    questions: { QuestionId: string; Answer: string }[]
+  ): Promise<OTPResponse> {
+    try {
+      const response = await apiClient<OTPResponse>(
+        "https://dummyapi.com/auth/securityquestions",
+        {
+          method: "POST",
+          body: JSON.stringify({ questions })
+        },
+        {
+          secondfactorauthenticationtoken:
+            this.secondFactorAuthenticationToken ?? ""
+        }
+      );
+      console.log(response);
+
+      return response.data!;
+    } catch (error) {
+      console.error("Error adding security questions:", error);
+      return {
+        IsPosted: false
+      };
+    }
+  }
+
+  async logout(): Promise<void> {
+    try {
+      localStorage.removeItem("spa-token");
+      this.token = null;
+      this.loginEmail = null;
+      this.secondFactorAuthenticationToken = null;
+      console.log("Logged out successfully");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  }
+
+  async addGoogleAuthenticator(): Promise<OTPResponse> {
+    try {
+      const response = await apiClient<OTPResponse>(
+        "https://dummyapi.com/auth/googleauthenticator",
+        {
+          method: "POST",
+          body: JSON.stringify({})
+        },
+        {
+          secondfactorauthenticationtoken:
+            this.secondFactorAuthenticationToken ?? ""
+        }
+      );
+      console.log(response);
+
+      return response.data!;
+    } catch (error) {
+      console.error("Error adding Google Authenticator:", error);
+      return {
+        IsPosted: false
+      };
+    }
+  }
   getToken(): string | null {
     return this.token;
   }
